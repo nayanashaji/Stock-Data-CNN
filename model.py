@@ -5,10 +5,45 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 import matplotlib.pyplot as plt
 
+import numpy as np
+import yfinance as yf
+
+def get_data():
+    signal = None
+
+    # ===== TRY 1: Yahoo Finance =====
+    try:
+        print("Trying Yahoo Finance...")
+        data = yf.download("AAPL", period="5y", interval="1d")
+        if not data.empty:
+            signal = data['Close'].values.flatten()
+            print("✅ Loaded from Yahoo Finance")
+            return signal
+    except Exception as e:
+        print("❌ Yahoo failed:", e)
+
+    # ===== TRY 2: Another ticker =====
+    try:
+        print("Trying alternate stock...")
+        data = yf.download("TCS.NS", period="5y", interval="1d")
+        if not data.empty:
+            signal = data['Close'].values.flatten()
+            print("✅ Loaded from NSE stock")
+            return signal
+    except Exception as e:
+        print("❌ NSE failed:", e)
+
+    # ===== FALLBACK: Synthetic Data =====
+    print("⚠️ Using synthetic data...")
+    np.random.seed(0)
+    t = np.arange(0, 1000)
+    signal = np.sin(0.02 * t) + 0.5 * np.random.randn(1000)
+
+    return signal
+
 # ====== STEP 1: Generate synthetic signal ======
-np.random.seed(0)
-t_series = np.arange(0, 1000)
-signal = np.sin(0.02 * t_series) + 0.5 * np.random.randn(1000)
+signal = get_data()
+print("Signal length:", len(signal))
 
 # ====== STEP 2: Create dataset ======
 window_size = 128
