@@ -117,8 +117,7 @@ model = models.Sequential([
     layers.Dense(1)
 ])
 
-model.compile(optimizer='adam', loss='mse')
-
+model.compile(optimizer='adam', loss='mean_squared_error')
 model.summary()
 
 
@@ -126,12 +125,14 @@ model.summary()
 # 🔹 STEP 6: Train Model
 # ==============================
 model.fit(X, y, epochs=10, batch_size=16)
+model.save("model.h5")
 
 
 # ==============================
 # 🔹 STEP 7: Prediction
 # ==============================
 pred = model.predict(X)
+
 
 # Convert back to original scale
 pred = scaler.inverse_transform(pred)
